@@ -1,0 +1,33 @@
+# ---- Node ----
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ---- Vite build ----
+frontend/dist/
+
+# ---- Electron build ----
+release/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+backend/.venv/
+.venv/
+venv/
+
+# ---- SQLite (datos locales de auditorías) ----
+backend/*.db
+*.sqlite
+*.sqlite3
+
+# ---- Reportes generados por las herramientas ----
+report.json
+nmap.xml
+
+# ---- Entorno / editor ----
+.env
+.DS_Store
+.idea/
+.vscode/

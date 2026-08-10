@@ -1,0 +1,59 @@
+{
+  "name": "reconpanel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Panel de control de escritorio para auditorías web autorizadas.",
+  "main": "electron/main.js",
+  "author": "ReconPanel",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend,electron -c blue,magenta,cyan \"npm run backend\" \"npm run frontend\" \"electron .\"",
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && .venv\\Scripts\\python -m uvicorn main:app --reload --port 8000",
+    "build": "cd frontend && npm run build && cd .. && electron-builder"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.reconpanel.app",
+    "productName": "ReconPanel",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!**/*.db"
+        ]
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

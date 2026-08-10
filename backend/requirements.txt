@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+websockets
+pydantic
+anthropic
+python-dotenv
