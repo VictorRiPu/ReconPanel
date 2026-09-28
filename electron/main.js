@@ -11,6 +11,7 @@
 //   - Al cerrar, matar el proceso del backend antes de salir.
 
 const { app, BrowserWindow, Menu, dialog } = require("electron");
+const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const { spawn } = require("child_process");
@@ -25,6 +26,23 @@ let mainWindow = null;
 let backendProc = null;
 
 // ----------------------------------------------------------------------- //
+// Logging (la app empaquetada no tiene consola visible: registramos también
+// a fichero para poder diagnosticar problemas de arranque del backend).
+// ----------------------------------------------------------------------- //
+
+const LOG_PATH = path.join(app.getPath("userData"), "reconpanel-debug.log");
+
+function log(...args) {
+  const line = `[${new Date().toISOString()}] ${args.join(" ")}`;
+  console.log(line);
+  try {
+    fs.appendFileSync(LOG_PATH, line + "\n");
+  } catch {
+    /* si no se puede escribir el log, no bloqueamos el arranque */
+  }
+}
+
+// ----------------------------------------------------------------------- //
 // Backend
 // ----------------------------------------------------------------------- //
 
@@ -36,33 +54,55 @@ function backendDir() {
 }
 
 function pythonExecutable() {
-  // Permite override explícito; si no, default por plataforma.
+  // Permite override explícito.
   if (process.env.RECONPANEL_PYTHON) return process.env.RECONPANEL_PYTHON;
+
+  // Si el build incluye un venv junto al backend (backend/.venv), lo usamos:
+  // deja la app autocontenida sin depender de un Python del sistema.
+  const venvPython = path.join(
+    backendDir(),
+    ".venv",
+    process.platform === "win32" ? "Scripts" : "bin",
+    process.platform === "win32" ? "python.exe" : "python"
+  );
+  if (fs.existsSync(venvPython)) return venvPython;
+
   return process.platform === "win32" ? "python" : "python3";
 }
 
 function startBackend() {
   // Solo en producción: en dev lo gestiona concurrently.
   if (isDev) {
-    console.log("[reconpanel] dev: backend gestionado por concurrently");
+    log("[reconpanel] dev: backend gestionado por concurrently");
     return;
   }
   const cwd = backendDir();
-  // start.py arranca uvicorn sin --reload (script de arranque de producción).
-  backendProc = spawn(pythonExecutable(), ["start.py"], {
-    cwd,
-    stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env },
-  });
+  const pythonExe = pythonExecutable();
+  log(`[reconpanel] backendDir=${cwd}`);
+  log(`[reconpanel] pythonExecutable=${pythonExe}`);
+  log(`[reconpanel] existe start.py: ${fs.existsSync(path.join(cwd, "start.py"))}`);
 
-  backendProc.stdout.on("data", (d) =>
-    console.log(`[backend] ${d.toString().trimEnd()}`)
-  );
-  backendProc.stderr.on("data", (d) =>
-    console.error(`[backend] ${d.toString().trimEnd()}`)
-  );
-  backendProc.on("exit", (code) =>
-    console.log(`[reconpanel] backend finalizó (code ${code})`)
+  // start.py arranca uvicorn sin --reload (script de arranque de producción).
+  try {
+    backendProc = spawn(pythonExe, ["start.py"], {
+      cwd,
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env },
+    });
+  } catch (e) {
+    log(`[reconpanel] spawn lanzó excepción síncrona: ${e && e.stack}`);
+    return;
+  }
+
+  log(`[reconpanel] spawn devolvió pid=${backendProc.pid}`);
+
+  backendProc.on("error", (err) => {
+    log(`[reconpanel] backendProc error: ${err && err.stack}`);
+  });
+  backendProc.stdout.on("data", (d) => log(`[backend] ${d.toString().trimEnd()}`));
+  backendProc.stderr.on("data", (d) => log(`[backend][err] ${d.toString().trimEnd()}`));
+  backendProc.on("exit", (code, signal) =>
+    log(`[reconpanel] backend finalizó (code ${code}, signal ${signal})`)
   );
 }
 

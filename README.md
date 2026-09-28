@@ -214,11 +214,13 @@ Genera en `release/`:
 La carpeta `backend/` completa se incluye en los recursos de la app
 (`extraResources`). En producción Electron lanza el backend con `python start.py`.
 
-> **Importante:** el ejecutable **no empaqueta un intérprete de Python**. La
-> máquina destino debe tener Python 3.10+ y las dependencias de
-> `requirements.txt` instaladas. Puedes forzar el intérprete con la variable de
-> entorno `RECONPANEL_PYTHON`. (Para una distribución totalmente autónoma habría
-> que congelar el backend con PyInstaller — fuera del alcance actual.)
+> **Importante:** si `backend/.venv` existe en el momento del build, se incluye
+> tal cual en el paquete y Electron lo detecta y lo usa automáticamente en
+> producción — el ejecutable queda autocontenido, sin depender de un Python del
+> sistema en la máquina destino. Si no existe ningún venv empaquetado, cae de
+> vuelta a `python`/`python3` del `PATH` (que entonces sí debe tener
+> `requirements.txt` instalado). También puedes forzar un intérprete concreto
+> con la variable de entorno `RECONPANEL_PYTHON`.
 
 ---
 
