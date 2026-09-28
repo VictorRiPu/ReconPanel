@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ ReconPanel
+# ReconPanel
 
 **Panel de control de escritorio para auditorías web autorizadas.**
 
@@ -20,12 +20,12 @@ persistente y generación de informes.
 
 ---
 
-## ✨ ¿Qué es?
+## Qué es
 
 ReconPanel es una aplicación de **escritorio multiplataforma** (Electron) que
 organiza una auditoría web en **6 fases** —reconocimiento, escaneo de puertos,
 enumeración web, análisis de vulnerabilidades, explotación controlada y
-generación de informe— y te permite lanzar las herramientas de cada fase con un
+generación de informe— y permite lanzar las herramientas de cada fase con un
 clic, viendo su salida **en directo** y guardando todo el historial.
 
 El foco del proyecto es la **arquitectura**: un frontend React desacoplado, una
@@ -34,21 +34,33 @@ _streaming_ del output por **WebSocket**, y una capa de persistencia en SQLite.
 
 ### Características
 
-- 🧭 **6 fases guiadas** con herramientas predefinidas y comandos plantilla.
-- ⚡ **Streaming en tiempo real** del `stdout`/`stderr` vía WebSocket, línea a
+- **6 fases guiadas** con herramientas predefinidas y comandos plantilla.
+- **Streaming en tiempo real** del `stdout`/`stderr` vía WebSocket, línea a
   línea y con auto-scroll inteligente.
-- 🎯 **Placeholders** `{HOST}` / `{TARGET}` que se interpolan con el objetivo:
-  escribe el target una vez y todos los comandos se rellenan solos.
-- 🛑 **Control de procesos**: cada ejecución es cancelable y se mata todo el
+- **Placeholders** `{HOST}` / `{TARGET}` que se interpolan con el objetivo:
+  se escribe el target una vez y todos los comandos se rellenan solos.
+- **Control de procesos**: cada ejecución es cancelable y se mata todo el
   árbol de procesos (multiplataforma) al detener o cerrar la app.
-- 💾 **Historial persistente** de auditorías y resultados en SQLite.
-- 📄 **Generación de informe** en Markdown a partir de los resultados, con un
-  **resumen ejecutivo opcional redactado por Claude** (API de Anthropic).
-- 🔒 **Backend solo local** (`127.0.0.1:8000`); Electron lo arranca y supervisa.
+- **Historial persistente** de auditorías y resultados en SQLite.
+- **Generación de informe** en Markdown a partir de los resultados, con un
+  resumen ejecutivo opcional redactado por Claude (API de Anthropic).
+- **Backend solo local** (`127.0.0.1:8000`); Electron lo arranca y supervisa.
 
 ---
 
-## ⚠️ Aviso legal
+## Capturas
+
+| Reconocimiento | Escaneo de puertos |
+|---|---|
+| ![Fase de reconocimiento pasivo](docs/screenshots/01-recon.png) | ![Fase de escaneo de puertos con nmap expandido](docs/screenshots/02-scan.png) |
+
+| Output en tiempo real | Generación de informe |
+|---|---|
+| ![Streaming de output vía WebSocket](docs/screenshots/03-output.png) | ![Panel de generación de informe en Markdown](docs/screenshots/04-report.png) |
+
+---
+
+## Aviso legal
 
 ReconPanel **ejecuta herramientas de seguridad reales** (nmap, nuclei, sqlmap,
 hydra, etc.) contra el objetivo que indiques. Úsalo **única y exclusivamente**
@@ -60,7 +72,7 @@ uso que hagas de esta herramienta.
 
 ---
 
-## 🧱 Stack
+## Stack
 
 | Capa          | Tecnología                                             |
 |---------------|--------------------------------------------------------|
@@ -73,7 +85,7 @@ uso que hagas de esta herramienta.
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
 reconpanel/
@@ -123,7 +135,7 @@ Eventos del WebSocket:
 
 ---
 
-## 🔧 Prerrequisitos
+## Prerrequisitos
 
 | Requisito | Versión | Notas |
 |-----------|---------|-------|
@@ -138,7 +150,7 @@ app; debes tenerlas tú: `whois`, `dig`, `subfinder`, `amass`, `nmap`, `naabu`,
 
 ---
 
-## 🚀 Instalación
+## Instalación
 
 ```bash
 # 0. Clona el repo
@@ -173,7 +185,21 @@ Sin clave, el informe se genera igualmente (solo omite el resumen redactado por 
 
 ---
 
-## 🧑‍💻 Desarrollo
+## Uso rápido
+
+1. Instala las dependencias (sección anterior).
+2. Arranca todo con `npm run dev` (ver [Desarrollo](#desarrollo)) o abre
+   directamente el `.exe` empaquetado (ver [Build](#build--empaquetado)).
+3. En la barra superior, escribe el **target** (`example.com` o una URL completa).
+4. Elige una fase en la barra lateral, despliega una herramienta y pulsa
+   **Ejecutar**: el comando ya viene interpolado con tu target.
+5. Sigue el output en directo en el panel derecho; se guarda solo en SQLite.
+6. En la fase **6 · Generación de reporte**, pulsa **Generar informe** para
+   compilar todo en un Markdown descargable.
+
+---
+
+## Desarrollo
 
 ```bash
 npm run dev
@@ -200,7 +226,7 @@ solo espera a que esté vivo. Si trabajas dentro de un venv, actívalo antes de
 
 ---
 
-## 📦 Build / Empaquetado
+## Build / Empaquetado
 
 ```bash
 npm run build
@@ -224,7 +250,7 @@ La carpeta `backend/` completa se incluye en los recursos de la app
 
 ---
 
-## 🗺️ Fases y herramientas
+## Fases y herramientas
 
 | Fase | Herramientas |
 |------|--------------|
@@ -237,6 +263,6 @@ La carpeta `backend/` completa se incluye en los recursos de la app
 
 ---
 
-## 📝 Licencia
+## Licencia
 
 [MIT](LICENSE)
