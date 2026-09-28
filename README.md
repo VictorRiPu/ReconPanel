@@ -207,7 +207,7 @@ npm run dev
 
 Arranca en paralelo (vía `concurrently`):
 
-1. **backend** — `uvicorn main:app --reload --port 8000`
+1. **backend** — `uvicorn main:app --port 8000`
 2. **frontend** — Vite dev server en `http://localhost:5173`
 3. **electron** — espera a que el backend responda en `/api/ping` y abre la ventana
 
@@ -215,11 +215,17 @@ En desarrollo Electron **no** relanza el backend (ya lo levanta `concurrently`);
 solo espera a que esté vivo. Si trabajas dentro de un venv, actívalo antes de
 `npm run dev` para que `uvicorn` resuelva.
 
+> **Sin `--reload` a propósito:** en Windows, uvicorn con `--reload` fuerza un
+> `SelectorEventLoop`, que no soporta lanzar subprocesos con `asyncio` — y
+> lanzar subprocesos es literalmente lo que hace ReconPanel al pulsar
+> "Ejecutar". Con reload activo, todas las ejecuciones fallan en silencio.
+> Tras cambiar código del backend, reinicia `npm run backend` a mano.
+
 ### Scripts individuales
 
 | Script | Acción |
 |--------|--------|
-| `npm run backend`  | Solo el backend (uvicorn con recarga) |
+| `npm run backend`  | Solo el backend (uvicorn, sin `--reload`) |
 | `npm run frontend` | Solo el dev server de Vite |
 | `npm run dev`      | Backend + frontend + Electron |
 | `npm run build`    | Build de Vite + empaquetado con electron-builder |

@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently -n backend,frontend,electron -c blue,magenta,cyan \"npm run backend\" \"npm run frontend\" \"electron .\"",
     "frontend": "cd frontend && npm run dev",
-    "backend": "cd backend && .venv\\Scripts\\python -m uvicorn main:app --reload --port 8000",
+    "backend": "cd backend && .venv\\Scripts\\python -m uvicorn main:app --port 8000",
     "build": "cd frontend && npm run build && cd .. && electron-builder"
   },
   "devDependencies": {

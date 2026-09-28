@@ -203,7 +203,10 @@ async def run_command(body: RunRequest) -> RunResponse:
     except asyncio.TimeoutError:
         raise HTTPException(status_code=500, detail="El proceso no arrancó a tiempo")
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=500, detail=f"No se pudo lanzar: {exc}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudo lanzar ({type(exc).__name__}): {exc or 'sin mensaje'}",
+        )
 
     return RunResponse(
         pid=pid, audit_id=body.audit_id, tool=body.tool, command=command

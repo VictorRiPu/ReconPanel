@@ -4,6 +4,13 @@ Lanza herramientas externas (nmap, nuclei, gobuster, ...) sin bloquear el
 event loop, hace streaming del output línea a línea hacia un callback (que
 en main.py reenvía por WebSocket) y mantiene un registro de procesos vivos
 para poder matarlos desde la UI.
+
+NOTA (Windows): asyncio.create_subprocess_shell requiere el ProactorEventLoop.
+uvicorn, cuando se lanza con --reload o con workers>1, fuerza un
+SelectorEventLoop en Windows (lo necesita su propio supervisor de recarga) y
+con él create_subprocess_shell falla con NotImplementedError. Por eso el
+backend NO debe arrancarse con --reload en Windows: sin reload, uvicorn usa
+ProactorEventLoop por defecto y los subprocesos funcionan con normalidad.
 """
 from __future__ import annotations
 
